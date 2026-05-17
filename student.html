@@ -3,307 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подключение к игре | Краеведческая викторина</title>
+    <title>Подключение | Краеведческая викторина</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
         
-        body {
-            font-family: 'Comfortaa', cursive;
-            background: linear-gradient(135deg, #8B7355 0%, #6B5344 50%, #4A3728 100%);
-            color: #2C1810;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 550px;
-            background: rgba(44, 24, 16, 0.7);
-            backdrop-filter: blur(20px);
-            border: 3px solid #A0826D;
-            border-radius: 40px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-        }
-        
+        .container { width: 100%; max-width: 500px; }
         .screen { display: none; }
         .screen.active { display: block; }
         
-        h1 { 
-            font-size: 2rem; 
-            text-align: center; 
-            margin-bottom: 25px;
-            color: #D4A574;
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 35px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
         
-        .logo { 
-            font-size: 70px; 
-            text-align: center; 
-            margin-bottom: 15px;
-            filter: drop-shadow(0 0 15px #A0826D);
-        }
+        .logo { font-size: 70px; text-align: center; margin-bottom: 15px; filter: drop-shadow(0 5px 20px rgba(233,69,96,0.4)); }
+        h1 { font-size: 1.8rem; text-align: center; margin-bottom: 25px; color: #e94560; }
         
         input {
-            width: 100%;
-            padding: 18px;
-            background: rgba(139, 115, 85, 0.3);
-            border: 2px solid #A0826D;
-            border-radius: 30px;
-            color: #C9B896;
-            font-size: 1.1rem;
-            font-family: 'Comfortaa', cursive;
-            margin: 10px 0;
-        }
-        
-        input::placeholder {
-            color: #8B7355;
-        }
-        
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 25px rgba(212, 165, 116, 0.4);
-            border-color: #D4A574;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 18px;
-            background: rgba(139, 115, 85, 0.4);
-            border: 2px solid #D4A574;
-            border-radius: 30px;
-            color: #D4A574;
-            font-size: 1.1rem;
-            font-weight: 600;
-            font-family: 'Comfortaa', cursive;
-            cursor: pointer;
-            margin: 10px 0;
+            width: 100%; padding: 16px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            margin-bottom: 15px;
             transition: all 0.3s;
         }
+        input::placeholder { color: rgba(255,255,255,0.4); }
+        input:focus { outline: none; border-color: #e94560; background: rgba(255,255,255,0.08); }
         
-        .btn:hover {
-            background: rgba(212, 165, 116, 0.3);
-            box-shadow: 0 0 30px rgba(212, 165, 116, 0.5);
-            transform: translateY(-3px);
+        .btn {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, #e94560, #c73659);
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(233,69,96,0.4);
         }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(233,69,96,0.5); }
         
         .info-box {
-            background: rgba(139, 115, 85, 0.2);
-            border: 2px solid #A0826D;
-            border-radius: 25px;
+            background: rgba(233,69,96,0.1);
+            border-radius: 15px;
             padding: 20px;
             margin: 20px 0;
         }
-        
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(160, 130, 109, 0.3);
-        }
-        
+        .info-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .info-item:last-child { border-bottom: none; }
         
         .question-header {
-            background: rgba(139, 115, 85, 0.3);
-            border: 2px solid #A0826D;
-            border-radius: 25px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
             padding: 15px 20px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
-            color: #D4A574;
-            font-weight: 600;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
-        .question-text {
-            font-size: 1.4rem;
-            margin: 30px 0;
-            text-align: center;
-            line-height: 1.5;
-            color: #C9B896;
-            font-weight: 600;
-        }
+        .question-text { font-size: 1.3rem; text-align: center; line-height: 1.5; margin: 25px 0; color: #fff; font-weight: 600; }
         
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 30px 0;
-        }
+        .options { display: flex; flex-direction: column; gap: 12px; margin: 25px 0; }
         
         .option {
-            background: rgba(139, 115, 85, 0.3);
-            border: 2px solid #A0826D;
-            border-radius: 30px;
-            padding: 18px 25px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 18px 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             transition: all 0.3s;
         }
-        
-        .option:hover {
-            background: rgba(212, 165, 116, 0.3);
-            box-shadow: 0 0 25px rgba(212, 165, 116, 0.4);
-            transform: translateX(5px);
-        }
-        
-        .option.selected {
-            background: rgba(212, 165, 116, 0.4);
-            border-color: #D4A574;
-        }
+        .option:hover { background: rgba(255,255,255,0.1); border-color: #e94560; transform: translateX(5px); }
+        .option.selected { background: rgba(233,69,96,0.2); border-color: #e94560; }
         
         .option-letter {
-            width: 45px;
-            height: 45px;
-            background: #D4A574;
-            color: #2C1810;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.3rem;
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #e94560, #c73659);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.1rem;
         }
         
         .status {
             text-align: center;
-            padding: 20px;
+            padding: 18px;
             margin-top: 20px;
-            border-radius: 30px;
-            font-size: 1.2rem;
-            font-weight: 600;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
         }
+        .status.correct { background: rgba(0,200,83,0.2); border: 2px solid #00c853; color: #00c853; }
+        .status.wrong { background: rgba(233,69,96,0.2); border: 2px solid #e94560; color: #e94560; }
+        .status.waiting { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
         
-        .status.correct { 
-            background: rgba(122, 159, 90, 0.3);
-            border: 2px solid #7A9F5A;
-            color: #7A9F5A;
-        }
-        
-        .status.wrong { 
-            background: rgba(180, 80, 60, 0.3);
-            border: 2px solid #B4503C;
-            color: #B4503C;
-        }
-        
-        .status.waiting {
-            background: rgba(139, 115, 85, 0.3);
-            border: 2px solid #A0826D;
-            color: #C9B896;
-        }
-        
-        .error {
-            background: rgba(180, 80, 60, 0.2);
-            border: 2px solid #B4503C;
-            color: #B4503C;
-            padding: 15px;
-            border-radius: 25px;
-            margin: 10px 0;
-            text-align: center;
-        }
+        .error { background: rgba(233,69,96,0.2); border: 2px solid #e94560; color: #e94560; padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
         
         .loader {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(160, 130, 109, 0.3);
-            border-top: 4px solid #D4A574;
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #e94560;
             border-radius: 50%;
-            margin: 20px auto;
+            margin: 25px auto;
             animation: spin 1s linear infinite;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.95rem; }
+        .back-link:hover { color: #e94560; }
         
-        @media (max-width: 600px) {
-            .container { padding: 20px; }
-            h1 { font-size: 1.6rem; }
-            .question-text { font-size: 1.2rem; }
-        }
+        @media (max-width: 500px) { .card { padding: 25px; } .question-text { font-size: 1.1rem; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="joinScreen" class="screen active">
-            <div class="logo">🏛️</div>
-            <h1>КРАЕВЕДЧЕСКАЯ ВИКТОРИНА</h1>
-            <div id="errorContainer"></div>
-            <input type="text" id="playerName" placeholder="Название команды" maxlength="20">
-            <input type="text" id="gameCode" placeholder="Код викторины (8 цифр)" maxlength="8" inputmode="numeric" pattern="[0-9]*">
-            <button id="joinButton" class="btn">🏆 ПОДКЛЮЧИТЬСЯ</button>
-            <a href="index.html" class="btn" style="text-align: center; text-decoration: none;">← На главную</a>
+            <div class="card">
+                <div class="logo">🏛️</div>
+                <h1>КРАЕВЕДЧЕСКАЯ ВИКТОРИНА</h1>
+                <div id="errorContainer"></div>
+                <input type="text" id="playerName" placeholder="Название команды" maxlength="20">
+                <input type="text" id="gameCode" placeholder="Код викторины (8 цифр)" maxlength="8" inputmode="numeric">
+                <button id="joinButton" class="btn" onclick="joinGame()">🏆 ПОДКЛЮЧИТЬСЯ</button>
+                <a href="index.html" class="back-link">← На главную</a>
+            </div>
         </div>
 
         <div id="waitingScreen" class="screen">
-            <div class="logo">⏳</div>
-            <h2 style="text-align: center; margin-bottom: 20px; color: #D4A574;">ОЖИДАНИЕ...</h2>
-            <div class="loader"></div>
-            <div class="info-box">
-                <div class="info-item">
-                    <span style="color: #C9B896;">Команда:</span>
-                    <strong id="displayName" style="color: #D4A574;">-</strong>
+            <div class="card">
+                <div class="logo">⏳</div>
+                <h2 style="text-align:center; color:#e94560; margin-bottom:15px">ОЖИДАНИЕ...</h2>
+                <div class="loader"></div>
+                <div class="info-box">
+                    <div class="info-item"><span>Команда:</span><strong id="displayName" style="color:#e94560">-</strong></div>
+                    <div class="info-item"><span>Код:</span><strong id="displayCode" style="color:#e94560">-</strong></div>
+                    <div class="info-item"><span>Очки:</span><strong id="displayScore" style="color:#e94560">0</strong></div>
                 </div>
-                <div class="info-item">
-                    <span style="color: #C9B896;">Код:</span>
-                    <strong id="displayCode" style="color: #D4A574;">-</strong>
-                </div>
-                <div class="info-item">
-                    <span style="color: #C9B896;">Очки:</span>
-                    <strong id="displayScore" style="color: #D4A574;">0</strong>
-                </div>
+                <button onclick="leaveGame()" class="btn" style="background:rgba(255,255,255,0.1)">🚪 ВЫЙТИ</button>
             </div>
-            <button onclick="leaveGame()" class="btn">🚪 ВЫЙТИ</button>
         </div>
 
         <div id="questionScreen" class="screen">
-            <div class="question-header">
-                <span>🏛️ ЧУГУНАЕВО</span>
-                <span id="questionCounter">1/30</span>
-            </div>
-            
-            <div class="question-text" id="questionText">
-                Загрузка вопроса...
-            </div>
-            
-            <div class="options" id="optionsContainer"></div>
-            
-            <div class="status waiting" id="answerStatus">
-                ⏳ Выберите вариант ответа
+            <div class="card">
+                <div class="question-header">
+                    <span>🏛️ ЧУГУНАЕВО</span>
+                    <span id="questionCounter">1/30</span>
+                </div>
+                <div class="question-text" id="questionText">Загрузка вопроса...</div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="status waiting" id="answerStatus">⏳ Выберите вариант ответа</div>
             </div>
         </div>
     </div>
 
     <script src="firebase-config.js"></script>
     <script>
-        console.log("🔍 Проверка QUIZ_DATA:", window.QUIZ_DATA);
-        
         if (!window.QUIZ_DATA) {
-            document.body.innerHTML = '<div style="color:#D4A574; padding:50px; font-size:1.5rem; text-align:center;">❌ ОШИБКА: вопросы не загружены</div>';
-            throw new Error("QUIZ_DATA не найден");
+            document.body.innerHTML = '<div style="color:#e94560;padding:50px;font-size:1.5rem;text-align:center">❌ Ошибка: вопросы не загружены</div>';
+            throw new Error("QUIZ_DATA not found");
         }
 
-        let currentGameId = null;
-        let playerName = null;
-        let currentQuestion = null;
-        let currentShuffledQuestion = null;
-        let hasAnswered = false;
-        let gameListener = null;
+        let currentGameId = null, playerName = null, currentQuestion = null, currentShuffledQuestion = null, hasAnswered = false, gameListener = null;
 
         const joinScreen = document.getElementById('joinScreen');
         const waitingScreen = document.getElementById('waitingScreen');
         const questionScreen = document.getElementById('questionScreen');
-        const joinButton = document.getElementById('joinButton');
         const errorContainer = document.getElementById('errorContainer');
         const playerNameInput = document.getElementById('playerName');
         const gameCodeInput = document.getElementById('gameCode');
@@ -315,224 +198,107 @@
         const answerStatus = document.getElementById('answerStatus');
         const questionCounter = document.getElementById('questionCounter');
 
-        function showError(message) {
-            errorContainer.innerHTML = `<div class="error">${message}</div>`;
-            setTimeout(() => { errorContainer.innerHTML = ''; }, 3000);
+        function showError(msg) {
+            errorContainer.innerHTML = `<div class="error">${msg}</div>`;
+            setTimeout(() => errorContainer.innerHTML = '', 3000);
         }
 
-        function switchScreen(screenName) {
-            [joinScreen, waitingScreen, questionScreen].forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenName + 'Screen').classList.add('active');
+        function switchScreen(name) {
+            [joinScreen, waitingScreen, questionScreen].forEach(s => s.classList.remove('active'));
+            document.getElementById(name + 'Screen').classList.add('active');
         }
 
         function resetQuestionState() {
-            hasAnswered = false;
-            currentQuestion = null;
-            currentShuffledQuestion = null;
+            hasAnswered = false; currentQuestion = null; currentShuffledQuestion = null;
             questionText.textContent = 'Загрузка вопроса...';
             optionsContainer.innerHTML = '';
             answerStatus.textContent = '⏳ Выберите вариант ответа';
             answerStatus.className = 'status waiting';
-            document.querySelectorAll('.option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
         }
 
         function joinGame() {
             const name = playerNameInput.value.trim();
             const code = gameCodeInput.value.trim();
-            
-            if (!name || name.length < 2) {
-                showError("Введите название команды (минимум 2 символа)");
-                return;
-            }
-            
-            if (!code || code.length !== 8 || !/^\d+$/.test(code)) {
-                showError("Введите 8 цифр кода викторины");
-                return;
-            }
+            if (!name || name.length < 2) { showError("Введите название команды (мин. 2 символа)"); return; }
+            if (!code || code.length !== 8 || !/^\d+$/.test(code)) { showError("Введите 8 цифр кода"); return; }
             
             playerName = name;
             currentGameId = "game_" + code;
             
-            joinButton.disabled = true;
-            joinButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ПОДКЛЮЧЕНИЕ...';
-            
-            db.ref(`games/${currentGameId}`).once('value').then(snapshot => {
-                if (!snapshot.exists()) {
-                    throw new Error(`Викторина с кодом ${code} не найдена`);
-                }
-                
-                const game = snapshot.val();
-                
-                if (game.players && game.players[name]) {
-                    throw new Error("Команда с таким названием уже есть");
-                }
-                
-                return db.ref(`games/${currentGameId}/players/${name}`).set({
-                    name: name,
-                    joined: Date.now(),
-                    score: 0,
-                    device: /Mobi|Android/i.test(navigator.userAgent) ? "📱 Телефон" : "💻 Компьютер"
-                });
+            db.ref(`games/${currentGameId}`).once('value').then(snap => {
+                if (!snap.exists()) throw new Error("Викторина не найдена");
+                const game = snap.val();
+                if (game.players && game.players[name]) throw new Error("Команда уже существует");
+                return db.ref(`games/${currentGameId}/players/${name}`).set({ name, joined: Date.now(), score: 0 });
             }).then(() => {
                 displayName.textContent = playerName;
                 displayCode.textContent = code;
-                
                 switchScreen('waiting');
                 listenToGame();
-                
-                joinButton.disabled = false;
-                joinButton.innerHTML = '🏆 ПОДКЛЮЧИТЬСЯ';
-                
-            }).catch(error => {
-                showError(error.message);
-                joinButton.disabled = false;
-                joinButton.innerHTML = '🏆 ПОДКЛЮЧИТЬСЯ';
-            });
+            }).catch(e => showError(e.message));
         }
 
         function listenToGame() {
-            if (!currentGameId) return;
-            
-            if (gameListener) {
-                db.ref(`games/${currentGameId}`).off('value', gameListener);
-            }
-            
-            gameListener = db.ref(`games/${currentGameId}`).on('value', snapshot => {
-                const game = snapshot.val();
-                if (!game) {
-                    leaveGame();
-                    return;
-                }
-                
-                if (game.players && game.players[playerName]) {
-                    displayScore.textContent = game.players[playerName].score || 0;
-                }
-                
-                const currentQuestionId = game.currentQuestion;
-                
-                if (game.status === "question_active" && currentQuestionId) {
-                    const question = QUIZ_DATA.questions.find(q => q.id === currentQuestionId);
-                    
-                    if (question) {
-                        if (!currentQuestion || currentQuestion.id !== question.id) {
-                            resetQuestionState();
-                            currentQuestion = question;
-                            
-                            const shuffled = window.getShuffledOptions(question);
-                            currentShuffledQuestion = {
-                                ...question,
-                                options: shuffled.options,
-                                correct: shuffled.correct
-                            };
-                            
-                            displayQuestion(currentShuffledQuestion);
-                        }
+            if (gameListener) db.ref(`games/${currentGameId}`).off('value', gameListener);
+            gameListener = db.ref(`games/${currentGameId}`).on('value', snap => {
+                const game = snap.val();
+                if (!game) { leaveGame(); return; }
+                if (game.players && game.players[playerName]) displayScore.textContent = game.players[playerName].score || 0;
+                const qId = game.currentQuestion;
+                if (game.status === "question_active" && qId) {
+                    const q = QUIZ_DATA.questions.find(x => x.id === qId);
+                    if (q && (!currentQuestion || currentQuestion.id !== q.id)) {
+                        resetQuestionState();
+                        currentQuestion = q;
+                        const shuffled = window.getShuffledOptions(q);
+                        currentShuffledQuestion = { ...q, options: shuffled.options, correct: shuffled.correct };
+                        displayQuestion(currentShuffledQuestion);
                     }
                 }
             });
         }
 
-        function displayQuestion(question) {
+        function displayQuestion(q) {
             switchScreen('question');
-            
-            questionText.textContent = question.text;
-            questionCounter.textContent = `${question.id}/30`;
-            
+            questionText.textContent = q.text;
+            questionCounter.textContent = `${q.id}/30`;
             optionsContainer.innerHTML = '';
-            
-            question.options.forEach((option, index) => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'option';
-                optionDiv.dataset.index = index;
-                optionDiv.innerHTML = `
-                    <div class="option-letter">${String.fromCharCode(65 + index)}</div>
-                    <div>${option}</div>
-                `;
-                
-                optionDiv.addEventListener('click', () => selectAnswer(index));
-                optionsContainer.appendChild(optionDiv);
+            q.options.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.dataset.index = i;
+                div.innerHTML = `<div class="option-letter">${String.fromCharCode(65 + i)}</div><div>${opt}</div>`;
+                div.onclick = () => selectAnswer(i);
+                optionsContainer.appendChild(div);
             });
         }
 
-        function selectAnswer(answerIndex) {
-            if (hasAnswered) return;
-            if (!currentShuffledQuestion || !currentGameId || !playerName) return;
-            
+        function selectAnswer(idx) {
+            if (hasAnswered || !currentShuffledQuestion || !currentGameId || !playerName) return;
             hasAnswered = true;
-            
-            document.querySelectorAll('.option').forEach((opt, idx) => {
-                opt.classList.remove('selected');
-                if (idx === answerIndex) opt.classList.add('selected');
-            });
-            
-            const isCorrect = (answerIndex === currentShuffledQuestion.correct);
-            
-            db.ref(`games/${currentGameId}/answers/${currentShuffledQuestion.id}/${playerName}`).set({
-                answerIndex: answerIndex,
-                isCorrect: isCorrect,
-                timestamp: Date.now()
-            }).then(() => {
-                if (isCorrect) {
-                    db.ref(`games/${currentGameId}/players/${playerName}/score`).transaction(score => {
-                        return (score || 0) + (currentShuffledQuestion.points || 1);
-                    });
-                }
-                
+            document.querySelectorAll('.option').forEach((o, i) => { o.classList.remove('selected'); if (i === idx) o.classList.add('selected'); });
+            const isCorrect = idx === currentShuffledQuestion.correct;
+            db.ref(`games/${currentGameId}/answers/${currentShuffledQuestion.id}/${playerName}`).set({ answerIndex: idx, isCorrect, timestamp: Date.now() }).then(() => {
+                if (isCorrect) db.ref(`games/${currentGameId}/players/${playerName}/score`).transaction(s => (s || 0) + 1);
                 answerStatus.textContent = isCorrect ? "✅ ПРАВИЛЬНО!" : "❌ НЕПРАВИЛЬНО";
                 answerStatus.className = isCorrect ? "status correct" : "status wrong";
-                
-            }).catch(error => {
-                showError("Ошибка при отправке ответа");
-                hasAnswered = false;
             });
         }
 
         function leaveGame() {
-            if (currentGameId && playerName) {
-                db.ref(`games/${currentGameId}/players/${playerName}`).remove();
-            }
-            
-            if (gameListener && currentGameId) {
-                db.ref(`games/${currentGameId}`).off('value', gameListener);
-            }
-            
-            currentGameId = null;
-            playerName = null;
-            currentQuestion = null;
-            currentShuffledQuestion = null;
-            hasAnswered = false;
-            gameListener = null;
-            
-            playerNameInput.value = '';
-            gameCodeInput.value = '';
-            
+            if (currentGameId && playerName) db.ref(`games/${currentGameId}/players/${playerName}`).remove();
+            if (gameListener && currentGameId) db.ref(`games/${currentGameId}`).off('value', gameListener);
+            currentGameId = null; playerName = null; currentQuestion = null; currentShuffledQuestion = null; hasAnswered = false; gameListener = null;
+            playerNameInput.value = ''; gameCodeInput.value = '';
             resetQuestionState();
             switchScreen('join');
         }
-
         window.leaveGame = leaveGame;
 
-        gameCodeInput.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '').substring(0, 8);
-        });
-
-        playerNameInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') gameCodeInput.focus();
-        });
-
-        gameCodeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') joinGame();
-        });
-
-        joinButton.addEventListener('click', joinGame);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            playerNameInput.focus();
-        });
+        gameCodeInput.oninput = function() { this.value = this.value.replace(/\D/g, '').substring(0, 8); };
+        gameCodeInput.onkeypress = e => { if (e.key === 'Enter') joinGame(); };
+        document.addEventListener('DOMContentLoaded', () => playerNameInput.focus());
     </script>
 </body>
 </html>

@@ -5,337 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель ведущего | Краеведческая викторина</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: #fff; min-height: 100vh; }
         
-        body {
-            font-family: 'Comfortaa', cursive;
-            background: linear-gradient(135deg, #8B7355 0%, #6B5344 50%, #4A3728 100%);
-            color: #2C1810;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-        
-        #mainInterface {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100vw;
-        }
+        #mainInterface { display: flex; flex-direction: column; height: 100vh; }
         
         .teacher-header {
-            background: rgba(44, 24, 16, 0.6);
-            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #A0826D;
-            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
-        .header-left h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: #D4A574;
-        }
+        .header-left h1 { font-size: 1.4rem; color: #e94560; }
         
         .game-code-box {
-            background: rgba(44, 24, 16, 0.6);
-            border: 2px solid #A0826D;
-            border-radius: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50px;
             padding: 10px 25px;
             display: flex;
             align-items: center;
             gap: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
-        .code-display {
-            font-family: monospace;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #D4A574;
-            letter-spacing: 3px;
-            min-width: 160px;
-            text-align: center;
-        }
+        .code-display { font-size: 1.8rem; font-weight: 800; color: #e94560; letter-spacing: 3px; min-width: 160px; text-align: center; }
         
         .glass-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 25px;
-            font-size: 0.95rem;
-            border: 2px solid #D4A574;
-            border-radius: 40px;
-            cursor: pointer;
-            background: rgba(139, 115, 85, 0.3);
-            color: #D4A574;
-            font-family: 'Comfortaa', cursive;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-weight: 600;
+            display: flex; align-items: center; gap: 8px; padding: 12px 25px;
+            font-size: 0.95rem; border: 2px solid #e94560; border-radius: 50px; cursor: pointer;
+            background: rgba(233,69,96,0.1); color: #fff; font-family: 'Nunito', sans-serif;
+            text-decoration: none; transition: all 0.3s; font-weight: 700;
         }
         
-        .glass-btn:hover {
-            background: rgba(212, 165, 116, 0.3);
-            box-shadow: 0 0 25px rgba(212, 165, 116, 0.5);
-            transform: translateY(-2px);
-        }
+        .glass-btn:hover { background: rgba(233,69,96,0.3); transform: translateY(-2px); }
         
-        .main-content {
-            display: flex;
-            flex: 1;
-            padding: 20px;
-            gap: 20px;
-            overflow: hidden;
-            min-height: 0;
-        }
-        
-        .left-column { width: 35%; display: flex; flex-direction: column; gap: 20px; overflow: hidden; }
-        .right-column { width: 65%; display: flex; flex-direction: column; gap: 20px; overflow: hidden; }
+        .main-content { display: flex; flex: 1; padding: 20px; gap: 20px; overflow: hidden; }
+        .left-column { width: 35%; display: flex; flex-direction: column; gap: 15px; }
+        .right-column { width: 65%; display: flex; flex-direction: column; }
         
         .glass-panel {
-            background: rgba(44, 24, 16, 0.5);
-            backdrop-filter: blur(15px);
-            border-radius: 30px;
-            padding: 25px;
-            border: 2px solid #A0826D;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; overflow: hidden;
         }
         
-        .glass-panel h2 {
-            color: #D4A574;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
+        .glass-panel h2 { color: #e94560; margin-bottom: 15px; font-size: 1.2rem; }
         
-        .control-buttons { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .control-buttons .glass-btn { padding: 15px; font-size: 1rem; justify-content: flex-start; }
+        .control-buttons { display: grid; gap: 10px; }
+        .control-buttons .glass-btn { padding: 15px; font-size: 1rem; }
         
         .info-block {
-            background: rgba(139, 115, 85, 0.2);
-            border: 2px solid #A0826D;
-            border-radius: 20px;
+            background: rgba(233,69,96,0.1);
+            border-radius: 15px;
             padding: 15px;
             margin-top: 15px;
         }
         
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .info-row:last-child { margin-bottom: 0; }
-        .info-label { color: #C9B896; }
-        .info-value { color: #D4A574; font-weight: 700; font-size: 1.2rem; }
+        .info-label { color: rgba(255,255,255,0.7); }
+        .info-value { color: #e94560; font-weight: 700; font-size: 1.2rem; }
         
-        .players-container { flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 5px; min-height: 0; }
-        
-        .players-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 12px;
-        }
+        .players-container { flex: 1; overflow-y: auto; min-height: 0; }
+        .players-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
         
         .player-card {
-            background: rgba(139, 115, 85, 0.3);
-            border: 2px solid #A0826D;
-            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
             padding: 15px;
             text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
             transition: all 0.3s;
         }
         
-        .player-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(212, 165, 116, 0.4);
-        }
+        .player-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); }
         
         .player-avatar {
-            width: 50px;
-            height: 50px;
-            background: #D4A574;
-            color: #2C1810;
+            width: 45px; height: 45px;
+            background: linear-gradient(135deg, #e94560, #c73659);
             border-radius: 50%;
             margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; font-weight: 800;
         }
         
-        .player-name { font-size: 1rem; font-weight: 600; margin-bottom: 5px; word-break: break-word; color: #D4A574; }
-        .player-score { color: #C9B896; font-size: 0.9rem; font-weight: 600; }
+        .player-name { font-size: 0.95rem; font-weight: 600; color: #fff; word-break: break-word; }
+        .player-score { color: #e94560; font-size: 0.85rem; margin-top: 5px; }
         
-        .questions-container { flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 5px; min-height: 0; }
-        .questions-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+        .questions-container { flex: 1; overflow-y: auto; min-height: 0; }
+        .questions-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; }
         
         .question-item {
-            background: rgba(139, 115, 85, 0.2);
-            border: 2px solid #A0826D;
-            border-radius: 15px;
-            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 12px 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .question-item:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(212, 165, 116, 0.4); }
-        .question-item.active { border-color: #D4A574; box-shadow: 0 0 20px rgba(212, 165, 116, 0.5); background: rgba(212, 165, 116, 0.2); }
-        .question-item.completed { border-color: #7A9F5A; opacity: 0.7; }
+        .question-item:hover { transform: scale(1.05); background: rgba(255,255,255,0.08); }
+        .question-item.active { border-color: #e94560; background: rgba(233,69,96,0.2); }
+        .question-item.completed { border-color: #00c853; opacity: 0.7; }
         
-        .question-number { font-size: 1.2rem; margin-bottom: 5px; color: #D4A574; font-weight: 600; }
-        .question-status { font-size: 0.9rem; }
+        .question-number { font-size: 1.1rem; font-weight: 700; color: #e94560; }
+        .question-status { font-size: 1rem; margin-top: 3px; }
         
-        .empty-state { text-align: center; padding: 30px 20px; color: #C9B896; }
+        .empty-state { text-align: center; padding: 30px; color: rgba(255,255,255,0.6); }
         .empty-icon { font-size: 50px; margin-bottom: 15px; }
         
         #presentationMode {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #8B7355 0%, #6B5344 50%, #4A3728 100%);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            z-index: 1000; display: none; flex-direction: column;
         }
-        
-        #presentationMode.active { display: flex; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #presentationMode.active { display: flex; }
         
         .presentation-header {
-            background: rgba(44, 24, 16, 0.6);
-            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.4);
             padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #A0826D;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
-        .presentation-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            color: #D4A574;
-            font-weight: 600;
-        }
+        .presentation-info { display: flex; align-items: center; gap: 20px; color: #fff; }
         
         .answers-stats { display: flex; gap: 15px; }
-        
         .answer-stat-box {
-            background: rgba(139, 115, 85, 0.3);
-            border: 2px solid #A0826D;
-            border-radius: 20px;
-            padding: 8px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 8px 18px;
             text-align: center;
-            min-width: 90px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
+        .answer-stat-box .label { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+        .answer-stat-box .value { font-size: 1.3rem; font-weight: 800; color: #e94560; }
         
-        .answer-stat-box .label { font-size: 0.7rem; color: #C9B896; }
-        .answer-stat-box .value { font-size: 1.3rem; font-weight: 700; color: #D4A574; }
-        
-        .presentation-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            overflow-y: auto;
-        }
+        .presentation-content { flex: 1; display: flex; align-items: center; justify-content: center; padding: 30px; overflow-y: auto; }
         
         .presentation-question {
-            max-width: 900px;
-            width: 100%;
-            background: rgba(44, 24, 16, 0.7);
-            backdrop-filter: blur(20px);
-            border: 3px solid #A0826D;
-            border-radius: 40px;
-            padding: 50px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 850px; width: 100%;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 45px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
-        .presentation-question h2 {
-            color: #D4A574;
-            font-size: 2rem;
-            text-align: center;
-            line-height: 1.4;
-            margin-bottom: 30px;
-        }
+        .presentation-question h2 { color: #fff; font-size: 1.8rem; text-align: center; line-height: 1.5; margin-bottom: 0; }
         
-        .presentation-controls {
-            padding: 15px;
-            text-align: center;
-            border-top: 2px solid #A0826D;
-            background: rgba(44, 24, 16, 0.4);
-        }
-        
-        .presentation-controls .glass-btn {
-            display: inline-flex;
-            width: auto;
-            padding: 12px 30px;
-            margin: 0 8px;
-        }
+        .presentation-controls { padding: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
+        .presentation-controls .glass-btn { display: inline-flex; width: auto; padding: 12px 30px; margin: 0 8px; }
         
         .answer-block {
-            margin-top: 30px;
-            padding: 25px;
-            background: rgba(139, 115, 85, 0.3);
-            border: 2px solid #A0826D;
-            border-radius: 25px;
-            animation: slideUp 0.5s;
+            margin-top: 25px; padding: 20px;
+            background: rgba(0,200,83,0.15);
+            border-radius: 15px;
+            border: 1px solid rgba(0,200,83,0.3);
         }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .correct-answer { color: #D4A574; font-size: 1.5rem; margin: 15px 0; text-align: center; font-weight: 700; }
-        .explanation { color: #C9B896; font-size: 1rem; line-height: 1.5; }
+        .correct-answer { color: #00c853; font-size: 1.4rem; text-align: center; font-weight: 700; margin: 10px 0; }
+        .explanation { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.6; text-align: center; }
         
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(139, 115, 85, 0.2); }
-        ::-webkit-scrollbar-thumb { background: #D4A574; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: #e94560; border-radius: 3px; }
         
-        @media (max-width: 1200px) {
-            .main-content { flex-direction: column; }
-            .left-column, .right-column { width: 100%; }
-        }
-        
-        @media (max-width: 768px) {
-            .teacher-header { flex-direction: column; gap: 10px; }
-            .presentation-question h2 { font-size: 1.5rem; }
-        }
+        @media (max-width: 1100px) { .main-content { flex-direction: column; } .left-column, .right-column { width: 100%; } }
+        @media (max-width: 768px) { .teacher-header { flex-direction: column; gap: 15px; } }
     </style>
 </head>
 <body>
     <div id="mainInterface">
         <header class="teacher-header">
-            <div class="header-left">
-                <h1>📋 ПАНЕЛЬ ВЕДУЩЕГО</h1>
-            </div>
+            <div class="header-left"><h1>📋 ПАНЕЛЬ ВЕДУЩЕГО</h1></div>
             <div class="game-code-box">
-                <span style="color: #C9B896;">КОД:</span>
+                <span style="color:rgba(255,255,255,0.7)">КОД:</span>
                 <div id="gameCode" class="code-display">--------</div>
-                <a href="index.html" class="glass-btn">
-                    <i class="fas fa-home"></i> Главная
-                </a>
+                <a href="index.html" class="glass-btn"><i class="fas fa-home"></i> Главная</a>
             </div>
         </header>
 
@@ -343,50 +201,30 @@
             <div class="left-column">
                 <div class="glass-panel">
                     <h2><i class="fas fa-gamepad"></i> УПРАВЛЕНИЕ</h2>
-                    
                     <div id="startSection">
                         <button onclick="startNewGame()" class="glass-btn control-buttons">
                             <i class="fas fa-plus-circle"></i> СОЗДАТЬ ВИКТОРИНУ
                         </button>
                     </div>
-
                     <div id="gameControls" style="display: none;">
                         <div class="control-buttons">
-                            <button onclick="startNextQuestion()" class="glass-btn">
-                                <i class="fas fa-play"></i> СЛЕДУЮЩИЙ ВОПРОС
-                            </button>
-                            <button onclick="showAnswer()" class="glass-btn">
-                                <i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ
-                            </button>
-                            <button onclick="nextQuestion()" class="glass-btn">
-                                <i class="fas fa-forward"></i> ДАЛЕЕ
-                            </button>
-                            <button onclick="resetGame()" class="glass-btn">
-                                <i class="fas fa-redo"></i> СБРОСИТЬ
-                            </button>
+                            <button onclick="startNextQuestion()" class="glass-btn"><i class="fas fa-play"></i> СЛЕДУЮЩИЙ ВОПРОС</button>
+                            <button onclick="showAnswer()" class="glass-btn"><i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ</button>
+                            <button onclick="nextQuestion()" class="glass-btn"><i class="fas fa-forward"></i> ДАЛЕЕ</button>
+                            <button onclick="resetGame()" class="glass-btn"><i class="fas fa-redo"></i> СБРОСИТЬ</button>
                         </div>
-                        
                         <div class="info-block">
-                            <div class="info-row">
-                                <span class="info-label">Вопрос:</span>
-                                <span class="info-value" id="currentQ">0/30</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Игроков:</span>
-                                <span class="info-value" id="playerCount">0</span>
-                            </div>
+                            <div class="info-row"><span class="info-label">Вопрос:</span><span class="info-value" id="currentQ">0/30</span></div>
+                            <div class="info-row"><span class="info-label">Игроков:</span><span class="info-value" id="playerCount">0</span></div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="glass-panel" style="flex: 1;">
-                    <h2><i class="fas fa-users"></i> КОМАНДЫ <span id="playersCount" style="margin-left: auto;">0</span></h2>
+                    <h2><i class="fas fa-users"></i> КОМАНДЫ <span id="playersCount" style="margin-left:auto">0</span></h2>
                     <div class="players-container">
                         <div id="playersList" class="players-list">
-                            <div class="empty-state">
-                                <div class="empty-icon">🏘️</div>
-                                <p>Ожидание команд...</p>
-                            </div>
+                            <div class="empty-state"><div class="empty-icon">🏘️</div><p>Ожидание команд...</p></div>
                         </div>
                     </div>
                 </div>
@@ -406,50 +244,31 @@
     <div id="presentationMode">
         <div class="presentation-header">
             <div class="presentation-info">
-                <span style="font-size: 1.1rem;">🏛️ РЕЖИМ ПРЕЗЕНТАЦИИ</span>
+                <span>🏛️ РЕЖИМ ПРЕЗЕНТАЦИИ</span>
                 <span>Вопрос <span id="presentationQNum">1</span>/30</span>
             </div>
-            
             <div class="answers-stats">
-                <div class="answer-stat-box">
-                    <div class="label">Ответили</div>
-                    <div class="value" id="answeredCount">0</div>
-                </div>
-                <div class="answer-stat-box">
-                    <div class="label">Правильно</div>
-                    <div class="value" id="correctCount">0</div>
-                </div>
+                <div class="answer-stat-box"><div class="label">Ответили</div><div class="value" id="answeredCount">0</div></div>
+                <div class="answer-stat-box"><div class="label">Правильно</div><div class="value" id="correctCount">0</div></div>
             </div>
         </div>
-
         <div class="presentation-content">
-            <div id="presentationQuestion" class="presentation-question">
-                <h2>Вопрос появится здесь</h2>
-            </div>
+            <div id="presentationQuestion" class="presentation-question"><h2>Вопрос появится здесь</h2></div>
         </div>
-
         <div class="presentation-controls">
-            <button onclick="exitPresentation()" class="glass-btn">
-                <i class="fas fa-times"></i> ВЕРНУТЬСЯ
-            </button>
-            <button onclick="showAnswer()" class="glass-btn">
-                <i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ
-            </button>
+            <button onclick="exitPresentation()" class="glass-btn"><i class="fas fa-times"></i> ВЕРНУТЬСЯ</button>
+            <button onclick="showAnswer()" class="glass-btn"><i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ</button>
         </div>
     </div>
 
     <script src="firebase-config.js"></script>
     <script>
         if (!window.QUIZ_DATA) {
-            document.body.innerHTML = '<div style="color:#D4A574; padding:50px; font-size:2rem; text-align:center;">❌ ОШИБКА: вопросы не загружены!</div>';
-            throw new Error("QUIZ_DATA не найден");
+            document.body.innerHTML = '<div style="color:#e94560; padding:50px; font-size:2rem; text-align:center;">❌ ОШИБКА: вопросы не загружены!</div>';
+            throw new Error("QUIZ_DATA not found");
         }
 
-        let currentGameId = null;
-        let currentQuestionIndex = 0;
-        let playersListener = null;
-        let answersListener = null;
-        let currentQuestionId = null;
+        let currentGameId = null, currentQuestionIndex = 0, playersListener = null, answersListener = null, currentQuestionId = null;
 
         const startSection = document.getElementById('startSection');
         const gameControls = document.getElementById('gameControls');
@@ -459,7 +278,6 @@
         const playersCount = document.getElementById('playersCount');
         const questionsList = document.getElementById('questionsList');
         const currentQ = document.getElementById('currentQ');
-
         const presentationMode = document.getElementById('presentationMode');
         const presentationQNum = document.getElementById('presentationQNum');
         const presentationQuestion = document.getElementById('presentationQuestion');
@@ -470,54 +288,28 @@
             const code = Math.floor(10000000 + Math.random() * 90000000).toString();
             currentGameId = "game_" + code;
             currentQuestionIndex = 0;
-            
-            const gameData = {
-                created: Date.now(),
-                status: "lobby",
-                quizId: QUIZ_DATA.id,
-                currentQuestion: null,
-                players: {},
-                answers: {},
-                settings: { timer: 45 }
-            };
-            
-            db.ref('games/' + currentGameId).set(gameData).then(() => {
+            db.ref('games/' + currentGameId).set({
+                created: Date.now(), status: "lobby", quizId: QUIZ_DATA.id,
+                currentQuestion: null, players: {}, answers: {}, settings: { timer: 45 }
+            }).then(() => {
                 startSection.style.display = 'none';
                 gameControls.style.display = 'block';
                 gameCodeDisplay.textContent = code;
                 currentQ.textContent = '0/30';
-                
                 updateQuestionsList();
                 listenToPlayers();
-                
                 alert("✅ Викторина создана!\nКод: " + code);
-            }).catch(error => {
-                alert("Ошибка: " + error.message);
-            });
+            }).catch(e => alert("Ошибка: " + e.message));
         };
 
         window.startNextQuestion = function() {
-            if (!currentGameId) {
-                alert("Сначала создайте викторину!");
-                return;
-            }
-            
+            if (!currentGameId) { alert("Сначала создайте викторину!"); return; }
             const question = QUIZ_DATA.questions[currentQuestionIndex];
-            if (!question) {
-                alert("🎉 Все вопросы пройдены!");
-                return;
-            }
-            
+            if (!question) { alert("🎉 Все вопросы пройдены!"); return; }
             db.ref(`games/${currentGameId}/answers/${question.id}`).remove();
-            
-            db.ref('games/' + currentGameId).update({
-                status: "question_active",
-                currentQuestion: question.id,
-                questionStartTime: Date.now()
-            }).then(() => {
+            db.ref('games/' + currentGameId).update({ status: "question_active", currentQuestion: question.id, questionStartTime: Date.now() }).then(() => {
                 enterPresentationMode(question);
                 startAnswerTracking(question.id);
-                
                 currentQuestionIndex++;
                 currentQ.textContent = currentQuestionIndex + '/30';
                 updateQuestionsList();
@@ -526,13 +318,9 @@
 
         function enterPresentationMode(question) {
             presentationQuestion.innerHTML = `<h2>${question.text}</h2>`;
-            
-            const oldAnswers = presentationQuestion.querySelectorAll('.answer-block');
-            oldAnswers.forEach(el => el.remove());
-            
+            presentationQuestion.querySelectorAll('.answer-block').forEach(el => el.remove());
             presentationMode.classList.add('active');
             presentationQNum.textContent = currentQuestionIndex + 1;
-            
             answeredCount.textContent = '0';
             correctCount.textContent = '0';
         }
@@ -540,50 +328,27 @@
         window.showAnswer = function() {
             const q = QUIZ_DATA.questions[currentQuestionIndex - 1];
             if (!q) return;
-            
-            const correctAnswer = q.options[q.correct];
-            
             const oldAnswer = presentationQuestion.querySelector('.answer-block');
             if (oldAnswer) oldAnswer.remove();
-            
             const answerBlock = document.createElement('div');
             answerBlock.className = 'answer-block';
-            answerBlock.innerHTML = `
-                <h3 style="color: #D4A574; margin-bottom: 15px;">✅ ПРАВИЛЬНЫЙ ОТВЕТ:</h3>
-                <div class="correct-answer">${correctAnswer}</div>
-                <div class="explanation">${q.explanation}</div>
-            `;
-            
+            answerBlock.innerHTML = `<h3 style="color:#00c853;text-align:center;margin-bottom:10px">✅ ПРАВИЛЬНЫЙ ОТВЕТ</h3><div class="correct-answer">${q.options[q.correct]}</div><div class="explanation">${q.explanation}</div>`;
             presentationQuestion.appendChild(answerBlock);
             db.ref('games/' + currentGameId).update({ status: "showing_results" });
         };
 
-        window.nextQuestion = function() {
-            presentationMode.classList.remove('active');
-        };
-
-        window.exitPresentation = function() {
-            presentationMode.classList.remove('active');
-        };
+        window.nextQuestion = function() { presentationMode.classList.remove('active'); };
+        window.exitPresentation = function() { presentationMode.classList.remove('active'); };
 
         window.resetGame = function() {
-            if (confirm("Сбросить викторину и начать заново?")) {
-                if (currentGameId) {
-                    db.ref('games/' + currentGameId).remove();
-                }
-                
-                if (answersListener && currentQuestionId) {
-                    db.ref(`games/${currentGameId}/answers/${currentQuestionId}`).off('value', answersListener);
-                }
+            if (confirm("Сбросить викторину?")) {
+                if (currentGameId) db.ref('games/' + currentGameId).remove();
+                if (answersListener && currentQuestionId) db.ref(`games/${currentGameId}/answers/${currentQuestionId}`).off('value', answersListener);
                 if (playersListener) playersListener();
-                
-                currentGameId = null;
-                currentQuestionIndex = 0;
-                startSection.style.display = 'block';
-                gameControls.style.display = 'none';
+                currentGameId = null; currentQuestionIndex = 0;
+                startSection.style.display = 'block'; gameControls.style.display = 'none';
                 gameCodeDisplay.textContent = '--------';
-                playerCount.textContent = '0';
-                playersCount.textContent = '0';
+                playerCount.textContent = '0'; playersCount.textContent = '0';
                 currentQ.textContent = '0/30';
                 playersList.innerHTML = '<div class="empty-state"><div class="empty-icon">🏘️</div><p>Ожидание команд...</p></div>';
                 updateQuestionsList();
@@ -592,57 +357,27 @@
 
         function startAnswerTracking(questionId) {
             if (!currentGameId || !questionId) return;
-            
             currentQuestionId = questionId;
-            
-            if (answersListener) {
-                db.ref(`games/${currentGameId}/answers/${currentQuestionId}`).off('value', answersListener);
-            }
-            
+            if (answersListener) db.ref(`games/${currentGameId}/answers/${currentQuestionId}`).off('value', answersListener);
             answersListener = db.ref(`games/${currentGameId}/answers/${questionId}`).on('value', snapshot => {
                 const answers = snapshot.val() || {};
-                updateAnswerStats(answers);
+                let total = 0, correct = 0;
+                Object.values(answers).forEach(a => { total++; if (a.isCorrect) correct++; });
+                answeredCount.textContent = total;
+                correctCount.textContent = correct;
             });
-        }
-
-        function updateAnswerStats(answers) {
-            const total = Object.keys(answers).length;
-            let correct = 0;
-            
-            Object.values(answers).forEach(a => {
-                if (a.isCorrect) correct++;
-            });
-            
-            answeredCount.textContent = total;
-            correctCount.textContent = correct;
         }
 
         function listenToPlayers() {
             if (!currentGameId) return;
-            
             playersListener = db.ref(`games/${currentGameId}/players`).on('value', snapshot => {
                 const players = snapshot.val() || {};
-                const playerArray = Object.entries(players).map(([name, data]) => ({
-                    name, ...data
-                }));
-                
+                const playerArray = Object.entries(players).map(([name, data]) => ({ name, ...data }));
                 playerCount.textContent = playerArray.length;
                 playersCount.textContent = playerArray.length;
-                
-                if (playerArray.length === 0) {
-                    playersList.innerHTML = '<div class="empty-state"><div class="empty-icon">🏘️</div><p>Ожидание команд...</p></div>';
-                    return;
-                }
-                
+                if (playerArray.length === 0) { playersList.innerHTML = '<div class="empty-state"><div class="empty-icon">🏘️</div><p>Ожидание команд...</p></div>'; return; }
                 playerArray.sort((a, b) => (b.score || 0) - (a.score || 0));
-                
-                playersList.innerHTML = playerArray.map(p => `
-                    <div class="player-card">
-                        <div class="player-avatar">${p.name.charAt(0).toUpperCase()}</div>
-                        <div class="player-name">${p.name}</div>
-                        <div class="player-score">🏆 ${p.score || 0}</div>
-                    </div>
-                `).join('');
+                playersList.innerHTML = playerArray.map(p => `<div class="player-card"><div class="player-avatar">${p.name.charAt(0).toUpperCase()}</div><div class="player-name">${p.name}</div><div class="player-score">🏆 ${p.score || 0}</div></div>`).join('');
             });
         }
 
@@ -650,36 +385,17 @@
             questionsList.innerHTML = QUIZ_DATA.questions.map((q, i) => {
                 const isCurrent = i === currentQuestionIndex - 1;
                 const isCompleted = i < currentQuestionIndex - 1;
-                
-                let statusClass = '';
-                if (isCurrent) statusClass = 'active';
-                else if (isCompleted) statusClass = 'completed';
-                
-                return `
-                    <div class="question-item ${statusClass}" onclick="jumpToQuestion(${i})">
-                        <div class="question-number">${i + 1}</div>
-                        <div class="question-status">
-                            ${isCurrent ? '🔴' : isCompleted ? '✅' : '⏳'}
-                        </div>
-                    </div>
-                `;
+                return `<div class="question-item ${isCurrent ? 'active' : ''} ${isCompleted ? 'completed' : ''}" onclick="jumpToQuestion(${i})"><div class="question-number">${i + 1}</div><div class="question-status">${isCurrent ? '🔴' : isCompleted ? '✅' : '⏳'}</div></div>`;
             }).join('');
         }
 
         function jumpToQuestion(index) {
-            if (!currentGameId) {
-                alert("Сначала создайте викторину!");
-                return;
-            }
+            if (!currentGameId) { alert("Сначала создайте викторину!"); return; }
             currentQuestionIndex = index;
             startNextQuestion();
         }
-
         window.jumpToQuestion = jumpToQuestion;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            updateQuestionsList();
-        });
+        document.addEventListener('DOMContentLoaded', () => updateQuestionsList());
     </script>
 </body>
 </html>
